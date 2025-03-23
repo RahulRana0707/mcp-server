@@ -1,0 +1,22 @@
+.env
+node_modules
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Directory for instrumented code for use with v8-profiler
+instrumented
+
+# build
+build
+dist
+
+# coverage
+coverage
