@@ -24,6 +24,7 @@
   "description": "A collection of MCP servers",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.7.0",
+    "dotenv": "^16.4.7",
     "zod": "^3.24.2"
   },
   "devDependencies": {

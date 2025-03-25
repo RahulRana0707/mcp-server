@@ -11,7 +11,7 @@ export const createIssue = async (
     content: [
       {
         type: "text",
-        text: `Issue created: ${args.summary}`,
+        text: `Successfully created JIRA issue: ${args.summary}`,
       },
     ],
   };
