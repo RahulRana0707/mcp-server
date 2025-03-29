@@ -1,4 +1,11 @@
 // Project response interface
+
+export interface TJiraADF {
+  version: 1;
+  type: "doc";
+  content: any[];
+}
+
 export interface IJiraProject {
   id: string;
   key: string;
@@ -37,6 +44,12 @@ export interface JiraIssueResponse {
   issues: Issue[];
 }
 
+export interface JisaCreateIssueResponse {
+  id: string;
+  key: string;
+  self: string;
+}
+
 export enum StatusIDMap {
   "To Do" = "10015",
   "In Progress" = "3",
@@ -47,4 +60,18 @@ export enum StatusIDMap {
   Done = "10016",
 }
 
+export enum PriorityMap {
+  Medium = "3",
+  High = "2",
+  Highest = "1",
+  Low = "4",
+}
+
+export enum IssueTypeMap {
+  Bug = "10020",
+  Task = "10018",
+  Story = "10015",
+}
+
 export type Status = keyof typeof StatusIDMap;
+export type Priority = keyof typeof PriorityMap;

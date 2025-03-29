@@ -1,19 +1,24 @@
 import { jiraConfig } from "../config/env.js";
-import { getStatusId } from "../tools/jira/utils.js";
+import { TJiraCreateIssueSchema } from "../schema/jira.js";
+import { convertToADF, getStatusId } from "../tools/jira/utils.js";
 import {
-  Fields,
   Issue,
+  IssueTypeMap,
   JiraIssueResponse,
   JiraProjectResponse,
+  JisaCreateIssueResponse,
+  PriorityMap,
   Status,
+  TJiraADF,
 } from "../types/jira/responses.js";
 
 interface JiraIssuePayload {
   fields: {
     project: { key: string };
     summary: string;
-    description: string;
-    issuetype: { name: string };
+    description: TJiraADF;
+    issuetype: { id: string };
+    [key: string]: any;
   };
 }
 
@@ -121,38 +126,51 @@ export class JiraClient implements JiraClientInterface {
     }
   }
 
-  async createIssue(
-    summary: string,
-    description: string,
-    issueType: string
-  ): Promise<string> {
+  async createIssue({
+    summary,
+    description,
+    issueType,
+    priority,
+  }: TJiraCreateIssueSchema): Promise<JisaCreateIssueResponse> {
     const payload: JiraIssuePayload = {
       fields: {
         project: { key: jiraConfig.projectKey },
         summary,
-        description,
-        issuetype: { name: issueType },
+        description: convertToADF(description),
+        issuetype: { id: IssueTypeMap[issueType] },
+        customfield_10079: {
+          id: "10062",
+          name: "Rahul Rana",
+        },
+        customfield_10020: 70,
+        priority: {
+          id: PriorityMap[priority],
+        },
       },
     };
 
     try {
-      const response = await fetch(`${this.baseUrl}/issue`, {
+      const myHeaders = new Headers();
+      myHeaders.append("Accept", "application/json");
+      myHeaders.append("Authorization", this.auth);
+      myHeaders.append("Content-Type", "application/json");
+
+      const requestOptions = {
         method: "POST",
-        headers: {
-          Authorization: `Basic ${this.auth}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: myHeaders,
+        redirect: "follow",
         body: JSON.stringify(payload),
-      });
+      } as RequestInit;
+
+      const response = await fetch(`${this.baseUrl}/issue`, requestOptions);
 
       if (!response.ok) {
         const error = await response.json();
         throw new Error(`JIRA API Error: ${JSON.stringify(error)}`);
       }
 
-      const data = await response.json();
-      return data.key;
+      const data: JisaCreateIssueResponse = await response.json();
+      return data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to create JIRA issue: ${error.message}`);
