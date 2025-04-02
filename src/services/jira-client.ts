@@ -102,7 +102,7 @@ export class JiraClient implements JiraClientInterface {
       const statusId = getStatusId(status);
 
       const response = await fetch(
-        `${this.baseUrl}/search?jql=project=TC AND assignee=harsh.gupta AND 'Sub-Assignee' = 10062 AND status=${statusId}`,
+        `${this.baseUrl}/search?jql=project=TC AND 'Sub-Assignee' = 10062 AND status=${statusId}`,
         requestOptions
       );
 
@@ -116,7 +116,7 @@ export class JiraClient implements JiraClientInterface {
         key: issue.key,
         summary: issue.fields.summary,
         description: issue.fields.description,
-        assigneeName: issue.fields.assignee.displayName,
+        assigneeName: issue?.fields?.assignee?.displayName || "No Assignee",
       }));
     } catch (error) {
       if (error instanceof Error) {
